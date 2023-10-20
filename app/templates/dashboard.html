@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="mt-4">Dashboard</h1>
+
+<!-- Updated Search Form -->
+<form id="new-search-form" class="form-inline mt-3">
+    <div class="form-group mb-2">
+        <label for="new-search-input" class="sr-only">Search</label>
+        <input type="text" class="form-control" id="new-search-input" placeholder="Search by GA4 code, changelog name, customer name">
+    </div>
+    <button type="submit" class="btn btn-primary mb-2">Search</button>
+</form>
+<!-- Search Results Container -->
+<div id="search-results-container">
+    <!-- Results will be populated here -->
+</div>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="search-results">
+            {% if changes %}
+                {% for change in changes %}
+                <tr style="line-height: 1.2;">
+                    <td style="padding: 8px;">
+                        <h5 style="margin: 0;">{{ change.title }}</h5>
+                        <small>{{ change.customer_name }} | {{ change.ga4_code }}</small><br>
+                        <b class="font-weight-light">{{ User.query.get(change.user_id).username }}</b>
+                    </td>
+                    <td>
+                        {% if change.user_id == current_user_id or current_user.is_admin %}
+                            <a href="{{ url_for('edit_change', change_id=change.id) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                            <a href="{{ url_for('delete_change', change_id=change.id) }}" class="btn btn-danger btn-sm mx-1">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2">Nessun risultato trovato.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+<!-- New Search Script -->
+<!-- Updated JavaScript -->
+<script>
+    function populateTable(data) {
+        let resultsHtml = '';
+        if (data.results.length > 0) {
+            data.results.forEach(function(item) {
+                const editUrl = `/edit/${item.id}`;
+                const deleteUrl = `/delete/${item.id}`;
+            
+                resultsHtml += `<tr style="line-height: 1.2;">
+                    <td style="padding: 8px;">
+                        <h5 style="margin: 0;">${item.title}</h5>
+                        <small>${item.customer_name} | ${item.ga4_code}</small>
+                    </td>
+                    <td style="padding: 8px;">
+                        <a href="${editUrl}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                        <a href="${deleteUrl}" class="btn btn-danger btn-sm mx-1">Delete</a>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            resultsHtml = '<tr><td colspan="2">Nessun risultato trovato.</td></tr>';
+        }
+        $('#search-results').html(resultsHtml);
+    }
+
+    $(document).ready(function() {
+        $('#new-search-form').on('submit', function(e) {
+            e.preventDefault();
+            const query = $('#new-search-input').val();
+            
+            if (query.trim() === '') {
+                // If query is empty, refresh the page to show all results
+                location.reload();
+                return;
+            }
+
+            $.get('/api/search', { q: query, limit: 10 }, function(data) {
+                populateTable(data);
+            });
+        });
+    });
+</script>
+
+</div>
+{% endblock %}
