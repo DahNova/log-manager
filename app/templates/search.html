@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Search Results</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Customer Name</th>
+                <th>GA4 Code</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for change in changes %}
+            <tr>
+                <td>{{ change.title }}</td>
+                <td>{{ change.customer_name }}</td>
+                <td>{{ change.ga4_code }}</td>
+                <td>{{ change.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

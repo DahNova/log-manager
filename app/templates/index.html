@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="jumbotron d-flex align-items-center" style="min-height: 70vh;">
+        <div class="container text-center">
+            <h1 class="display-4">Benvenuto su ChangeLog App</h1>
+            <p class="lead">Per accedere alla gestione dei cambiamenti, effettua il login o registrati.</p>
+            <hr class="my-4">
+            <p>Puoi tenere traccia dei tuoi cambiamenti in modo semplice e veloce.</p>
+            <div class="text-center">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-success btn-lg mx-2">Registrati</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
